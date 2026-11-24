@@ -8,8 +8,8 @@
         <span>Home</span>
     </a>
 
-    <!-- Transactions -->
-    <a href="{% url 'dashboard' %}" class="flex flex-col items-center py-1 px-3 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
+    <!-- Transactions / Activity (Expenses & Income) -->
+    <a href="{% url 'expense_list' %}" class="flex flex-col items-center py-1 px-3 text-xs font-semibold {% if 'expense' in request.resolver_match.url_name or 'income' in request.resolver_match.url_name %}text-emerald-600{% else %}text-slate-500 hover:text-slate-800{% endif %} transition">
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
@@ -18,7 +18,7 @@
 
     <!-- Add Button (Elevated Accent) -->
     <div class="-mt-5">
-        <a href="{% url 'dashboard' %}" class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 active:scale-95 transition">
+        <a href="{% url 'expense_create' %}" class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 active:scale-95 transition" title="Add Expense">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
             </svg>

@@ -24,4 +24,22 @@ urlpatterns = [
     path('income/<int:pk>/', views.income_detail, name='income_detail'),
     path('income/<int:pk>/edit/', views.income_update, name='income_update'),
     path('income/<int:pk>/delete/', views.income_delete, name='income_delete'),
+
+    # Category CRUD
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/add/', views.category_create, name='category_create'),
+    path('categories/<int:pk>/edit/', views.category_update, name='category_update'),
+    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+
+    # Budget CRUD
+    path('budgets/', views.budget_list, name='budget_list'),
+    path('budgets/add/', views.budget_create, name='budget_create'),
+    path('budgets/<int:pk>/edit/', views.budget_update, name='budget_update'),
+    path('budgets/<int:pk>/delete/', views.budget_delete, name='budget_delete'),
+
+    # Transaction History (Phase 11)
+    path('transactions/', views.transaction_history, name='transaction_history'),
+
+    # Reports & Analytics (Phase 12)
+    path('reports/', views.reports_view, name='reports'),
 ]

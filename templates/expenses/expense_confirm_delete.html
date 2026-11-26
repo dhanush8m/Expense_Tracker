@@ -3,47 +3,49 @@
 {% block title %}Delete Expense - ExpenseWise{% endblock %}
 
 {% block content %}
-<div class="py-4 space-y-5">
+<div class="py-4 space-y-4">
     <!-- Back Navigation -->
-    <a href="{% url 'expense_detail' expense.id %}" class="inline-flex items-center space-x-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <a href="{% url 'expense_detail' expense.id %}" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
         <span>Back to Details</span>
     </a>
 
     <!-- Confirmation Card -->
-    <div class="bg-white rounded-2xl p-6 border border-rose-200 shadow-sm text-center space-y-4">
-        <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto text-2xl">
-            🗑️
+    <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs text-center space-y-4">
+        <div class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
         </div>
 
         <div>
-            <h1 class="text-lg font-bold text-slate-900">Delete this expense?</h1>
+            <h1 class="text-base font-bold text-slate-900">Delete this expense?</h1>
             <p class="text-xs text-slate-500 mt-1">
                 Are you sure you want to permanently remove this transaction? This action cannot be undone.
             </p>
         </div>
 
         <!-- Expense Summary Box -->
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-left space-y-1">
+        <div class="bg-slate-50/70 rounded-2xl p-4 border border-slate-200/70 text-left space-y-1">
             <div class="flex items-center justify-between">
-                <span class="text-sm font-bold text-slate-800">{{ expense.title }}</span>
-                <span class="text-sm font-extrabold text-rose-600">₹{{ expense.amount }}</span>
+                <span class="text-xs font-bold text-slate-800">{{ expense.title }}</span>
+                <span class="text-xs font-extrabold text-rose-600">₹{{ expense.amount }}</span>
             </div>
-            <div class="text-xs text-slate-500">
+            <div class="text-[11px] text-slate-400">
                 <span>{{ expense.category.name }}</span> • <span>{{ expense.date|date:"d M Y" }}</span>
             </div>
         </div>
 
         <!-- POST Form for Delete -->
-        <form method="POST" action="{% url 'expense_delete' expense.id %}" class="space-y-2 pt-2">
+        <form method="POST" action="{% url 'expense_delete' expense.id %}" class="space-y-2 pt-1">
             {% csrf_token %}
-            <button type="submit" class="w-full py-3.5 px-4 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold rounded-xl shadow-md shadow-rose-600/20 text-sm transition">
-                Yes, Delete Expense
+            <button type="submit" class="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold rounded-xl text-xs transition">
+                Confirm Deletion
             </button>
-            <a href="{% url 'expense_detail' expense.id %}" class="block w-full py-3 px-4 text-center text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
-                No, Keep It
+            <a href="{% url 'expense_detail' expense.id %}" class="block w-full py-2.5 px-4 text-center text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
+                Cancel
             </a>
         </form>
     </div>

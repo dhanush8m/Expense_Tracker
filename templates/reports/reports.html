@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - ExpenseWise{% endblock %}
+
+{% block extra_head %}
+<!-- Lightweight Chart.js via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+
+    <!-- Header & Year Selector -->
+    <div class="flex items-center justify-between pt-1">
+        <div>
+            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Analytics</h1>
+            <p class="text-xs text-slate-500 font-medium">Spending trends & financial health</p>
+        </div>
+        <!-- Year Switcher -->
+        <form method="GET" action="{% url 'reports' %}" class="inline">
+            <select name="year" onchange="this.form.submit()" class="px-3 py-1.5 text-xs font-bold rounded-xl border border-slate-200 bg-white text-slate-800 shadow-2xs focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                {% for y in years_list %}
+                <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>
+                    {{ y }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <!-- Annual KPI Summary (4 Cards) -->
+    <div class="grid grid-cols-2 gap-2.5">
+        <!-- Inflow -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Total Inflow
+            </span>
+            <span class="text-base font-extrabold text-emerald-600 block truncate">
+                +₹{{ total_income|floatformat:2 }}
+            </span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Earned in {{ selected_year }}</span>
+        </div>
+
+        <!-- Outflow -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Total Outflow
+            </span>
+            <span class="text-base font-extrabold text-rose-600 block truncate">
+                -₹{{ total_expenses|floatformat:2 }}
+            </span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Spent in {{ selected_year }}</span>
+        </div>
+
+        <!-- Net Savings -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Net Savings
+            </span>
+            <span class="text-base font-extrabold {% if net_savings < 0 %}text-rose-500{% else %}text-slate-900{% endif %} block truncate">
+                ₹{{ net_savings|floatformat:2 }}
+            </span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Retained balance</span>
+        </div>
+
+        <!-- Savings Rate -->
+        <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Savings Rate
+            </span>
+            <span class="text-base font-extrabold text-emerald-700 block truncate">
+                {{ savings_rate }}%
+            </span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Of total earnings</span>
+        </div>
+    </div>
+
+    <!-- Chart 1: Monthly Cashflow Trend (Bar Chart) -->
+    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Monthly Cash Flow</h2>
+            <span class="text-[10px] text-slate-400">{{ selected_year }}</span>
+        </div>
+
+        <div class="relative h-48 w-full">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 2: Category Breakdown (Doughnut Chart & List) -->
+    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Category Spending</h2>
+            <span class="text-[10px] text-slate-400">{{ category_breakdown|length }} categories</span>
+        </div>
+
+        {% if category_breakdown %}
+            <!-- Doughnut Chart Canvas -->
+            <div class="relative h-44 w-full">
+                <canvas id="categoryChart"></canvas>
+            </div>
+
+            <!-- Category Breakdown Progress Bars -->
+            <div class="space-y-2.5 pt-2 border-t border-slate-100">
+                {% for item in category_breakdown %}
+                <div class="space-y-1">
+                    <div class="flex items-center justify-between text-xs font-semibold">
+                        <span class="text-slate-800">{{ item.name }}</span>
+                        <div class="text-right">
+                            <span class="text-slate-900 font-bold">₹{{ item.amount|floatformat:2 }}</span>
+                            <span class="text-slate-400 text-[10px] ml-1">({{ item.percent }}%)</span>
+                        </div>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: {{ item.percent }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="py-8 text-center text-xs text-slate-400">
+                No expense data recorded for {{ selected_year }}.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Monthly Summary Ledger Table -->
+    {% if monthly_summary_table %}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-0">
+        <div class="p-3.5 bg-slate-50 border-b border-slate-200">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-600">Month-by-Month Breakdown</h2>
+        </div>
+        <div class="divide-y divide-slate-100 text-xs">
+            {% for row in monthly_summary_table %}
+            <div class="flex items-center justify-between p-3.5 hover:bg-slate-50 transition">
+                <div>
+                    <span class="font-bold text-slate-900 block">{{ row.month }}</span>
+                    <span class="text-[10px] text-slate-400">Net: ₹{{ row.net|floatformat:0 }}</span>
+                </div>
+                <div class="text-right space-y-0.5">
+                    <span class="text-emerald-600 font-bold block">+₹{{ row.income|floatformat:0 }}</span>
+                    <span class="text-rose-600 font-bold block">-₹{{ row.expense|floatformat:0 }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Monthly Income vs Expenses Bar Chart
+    const monthlyCtx = document.getElementById('monthlyChart');
+    if (monthlyCtx) {
+        const labels = {{ monthly_labels_json|safe }};
+        const incomeData = {{ monthly_income_json|safe }};
+        const expenseData = {{ monthly_expense_json|safe }};
+
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeData,
+                        backgroundColor: '#10b981', // emerald-500
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Expenses',
+                        data: expenseData,
+                        backgroundColor: '#f43f5e', // rose-500
+                        borderRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 10,
+                            font: { size: 10, weight: 'bold' }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 9 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: { size: 9 },
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Category Breakdown Doughnut Chart
+    const catCtx = document.getElementById('categoryChart');
+    if (catCtx) {
+        const catLabels = {{ chart_cat_labels_json|safe }};
+        const catValues = {{ chart_cat_values_json|safe }};
+
+        if (catValues.length > 0) {
+            new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catValues,
+                        backgroundColor: [
+                            '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6',
+                            '#ec4899', '#f97316', '#eab308', '#64748b'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 10,
+                                font: { size: 10 }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+    }
+});
+</script>
+{% endblock %}

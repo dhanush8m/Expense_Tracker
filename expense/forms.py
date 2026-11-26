@@ -1,8 +1,11 @@
+import calendar
 from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Expense, Category, Income
+from .models import Expense, Category, Income, Budget
+
+MONTH_CHOICES = [(i, calendar.month_name[i]) for i in range(1, 13)]
 
 
 class RegisterForm(UserCreationForm):
@@ -121,5 +124,110 @@ class IncomeForm(forms.ModelForm):
                 'rows': 3
             }),
         }
+
+
+class CategoryForm(forms.ModelForm):
+    """
+    ModelForm for adding or editing custom categories.
+    Validates that category names are unique per user and don't clash with defaults.
+    """
+    class Meta:
+        model = Category
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition',
+                'placeholder': 'e.g. Gym, Subscriptions, Pets, Books'
+            }),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name', '').strip()
+        if not name:
+            raise forms.ValidationError("Category name cannot be empty.")
+
+        # Check for duplicate in system defaults or user's custom categories
+        query = Q(name__iexact=name) & (Q(user__isnull=True) | Q(user=self.user))
+        if self.instance and self.instance.pk:
+            exists = Category.objects.filter(query).exclude(pk=self.instance.pk).exists()
+        else:
+            exists = Category.objects.filter(query).exists()
+
+        if exists:
+            raise forms.ValidationError(f"A category named '{name}' already exists.")
+        return name
+
+
+class BudgetForm(forms.ModelForm):
+    """
+    ModelForm for setting and editing monthly budgets per category.
+    """
+    month = forms.ChoiceField(
+        choices=MONTH_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-white'
+        })
+    )
+
+    class Meta:
+        model = Budget
+        fields = ['category', 'amount', 'month', 'year']
+        widgets = {
+            'category': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition bg-white'
+            }),
+            'amount': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition',
+                'placeholder': '0.00',
+                'step': '0.01',
+                'min': '0.01'
+            }),
+            'year': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition',
+                'placeholder': 'YYYY',
+                'min': '2020',
+                'max': '2099'
+            }),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        if user is not None:
+            self.fields['category'].queryset = Category.objects.filter(
+                Q(user=user) | Q(user__isnull=True)
+            ).order_by('name')
+        else:
+            self.fields['category'].queryset = Category.objects.filter(user__isnull=True).order_by('name')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        month = cleaned_data.get('month')
+        year = cleaned_data.get('year')
+
+        if category and month and year and self.user:
+            query = Budget.objects.filter(
+                user=self.user,
+                category=category,
+                month=int(month),
+                year=year
+            )
+            if self.instance and self.instance.pk:
+                query = query.exclude(pk=self.instance.pk)
+
+            if query.exists():
+                month_name = calendar.month_name[int(month)]
+                raise forms.ValidationError(
+                    f"A budget for '{category.name}' in {month_name} {year} already exists. Please edit that budget instead."
+                )
+
+        return cleaned_data
+
+
 
 

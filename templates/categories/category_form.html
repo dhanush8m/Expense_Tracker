@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - ExpenseWise{% endblock %}
+
+{% block content %}
+<div class="py-2 space-y-4">
+    <!-- Back Navigation -->
+    <a href="{% url 'category_list' %}" class="inline-flex items-center space-x-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span>Back to Categories</span>
+    </a>
+
+    <!-- Page Title -->
+    <div>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">{{ page_title }}</h1>
+        <p class="text-xs text-slate-500">Add a personalized category for sorting your expenses</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+        <form method="POST" action="" class="space-y-4">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Category Name Field -->
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Category Name <span class="text-rose-500">*</span>
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.name.errors.0 }}</p>
+                {% endif %}
+                <p class="text-[11px] text-slate-400 mt-1.5">
+                    Must be unique and not match any existing default category.
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-2 space-y-2">
+                <button type="submit" class="w-full py-3.5 px-4 bg-slate-900 hover:bg-black active:bg-slate-950 text-white font-medium rounded-xl shadow-xs transition duration-150 text-sm">
+                    {{ submit_btn_text }}
+                </button>
+                <a href="{% url 'category_list' %}" class="block w-full py-3 px-4 text-center text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

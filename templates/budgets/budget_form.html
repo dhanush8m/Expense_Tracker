@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} - ExpenseWise{% endblock %}
+
+{% block content %}
+<div class="py-2 space-y-4">
+    <!-- Back Navigation -->
+    <a href="{% url 'budget_list' %}" class="inline-flex items-center space-x-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span>Back to Budgets</span>
+    </a>
+
+    <!-- Page Title -->
+    <div>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">{{ page_title }}</h1>
+        <p class="text-xs text-slate-500">Set a monthly spending threshold for a category</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+        <form method="POST" action="" class="space-y-4">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-medium">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Category Field -->
+            <div>
+                <label for="{{ form.category.id_for_label }}" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Category <span class="text-rose-500">*</span>
+                </label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.category.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Budget Amount Field -->
+            <div>
+                <label for="{{ form.amount.id_for_label }}" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Monthly Budget Limit (₹) <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-3 text-slate-400 font-bold text-sm">₹</span>
+                    <input type="number" name="amount" step="0.01" min="0.01" value="{{ form.amount.value|default:'' }}" 
+                           class="w-full pl-8 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition" 
+                           placeholder="5000.00" required id="{{ form.amount.id_for_label }}">
+                </div>
+                {% if form.amount.errors %}
+                <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.amount.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Month & Year Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Month Field -->
+                <div>
+                    <label for="{{ form.month.id_for_label }}" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Month <span class="text-rose-500">*</span>
+                    </label>
+                    {{ form.month }}
+                    {% if form.month.errors %}
+                    <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.month.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Year Field -->
+                <div>
+                    <label for="{{ form.year.id_for_label }}" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Year <span class="text-rose-500">*</span>
+                    </label>
+                    {{ form.year }}
+                    {% if form.year.errors %}
+                    <p class="text-xs text-rose-600 mt-1 font-medium">{{ form.year.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-2 space-y-2">
+                <button type="submit" class="w-full py-3.5 px-4 bg-slate-900 hover:bg-black active:bg-slate-950 text-white font-medium rounded-xl shadow-xs transition duration-150 text-sm">
+                    {{ submit_btn_text }}
+                </button>
+                <a href="{% url 'budget_list' %}" class="block w-full py-3 px-4 text-center text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

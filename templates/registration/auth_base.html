@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}auth-page-body bg-black text-white antialiased min-h-screen selection:bg-white selection:text-black{% endblock %}
+
+{% block body_shell %}
+<div class="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black text-white px-4 py-8">
+
+    <!-- WebGL Dot-Matrix Canvas -->
+    <canvas id="dot-matrix-canvas" class="fixed inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+    <!-- Radial Vignette Overlay -->
+    <div class="fixed inset-0 z-[1] pointer-events-none"
+         style="background: radial-gradient(circle at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);"></div>
+
+    <!-- Centered Auth Modal Card -->
+    <div class="relative z-[2] w-full max-w-[400px] bg-[#121212] rounded-xl p-8 border border-[#222] shadow-[0_10px_40px_rgba(0,0,0,0.8)] flex flex-col items-center">
+        <div class="w-full max-w-[360px] flex flex-col items-center text-center">
+
+            <!-- Brand Logo Badge -->
+            <div class="w-11 h-11 rounded-full bg-[#111] border border-[#333] flex items-center justify-center mb-3 p-2 shadow-xs">
+                <img width="48" height="48" src="https://img.icons8.com/doodle/48/wallet--v1.png" alt="wallet--v1" class="w-full h-full object-contain"/>
+            </div>
+
+            <!-- Flash Messages (Dark Mode) -->
+            {% if messages %}
+            <div class="w-full space-y-2 mb-4 text-left">
+                {% for message in messages %}
+                <div class="flex items-center justify-between px-3 py-2.5 rounded-md text-xs border
+                    {% if message.tags == 'error' %}
+                        bg-rose-950/60 text-rose-200 border-rose-500/40
+                    {% elif message.tags == 'success' %}
+                        bg-emerald-950/60 text-emerald-200 border-emerald-500/40
+                    {% else %}
+                        bg-[#1a1a1a] text-neutral-200 border-[#333]
+                    {% endif %}">
+                    <span>{{ message }}</span>
+                    <button type="button" onclick="this.parentElement.remove()" class="text-neutral-400 hover:text-white ml-2 text-xs leading-none">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block auth_content %}{% endblock %}
+
+            <!-- Footer -->
+            <div class="mt-4 text-[11px] text-[#666] leading-relaxed text-center">
+                By proceeding, you agree to using ExpenseWise<br/>
+                for secure personal financial tracking.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dot-matrix-bg.js' %}"></script>
+{% endblock %}

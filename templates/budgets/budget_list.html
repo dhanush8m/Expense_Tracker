@@ -50,25 +50,25 @@
     <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-xs space-y-4 border border-slate-800">
         <div class="flex items-center justify-between">
             <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                {{ month_name }} {{ selected_year }} Overview
+                {{ month_name }} <span class="bungee-regular">{{ selected_year }}</span> Overview
             </span>
             <span class="text-xs font-bold px-2.5 py-0.5 rounded-full {% if total_remaining < 0 %}bg-rose-500/20 text-rose-400 border border-rose-500/30{% else %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% endif %}">
-                {{ overall_percent }}% Spent
+                <span class="bungee-regular">{{ overall_percent }}%</span> Spent
             </span>
         </div>
 
         <div class="grid grid-cols-3 gap-2 text-center pt-1">
             <div class="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/50">
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold mb-0.5">Budgeted</span>
-                <span class="text-sm font-bold text-white block truncate">₹{{ total_budgeted|floatformat:0 }}</span>
+                <span class="text-sm bungee-regular text-white block truncate">₹{{ total_budgeted|floatformat:0 }}</span>
             </div>
             <div class="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/50">
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold mb-0.5">Spent</span>
-                <span class="text-sm font-bold text-rose-400 block truncate">₹{{ total_spent|floatformat:0 }}</span>
+                <span class="text-sm bungee-regular text-rose-400 block truncate">₹{{ total_spent|floatformat:0 }}</span>
             </div>
             <div class="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/50">
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold mb-0.5">Remaining</span>
-                <span class="text-sm font-bold {% if total_remaining < 0 %}text-rose-400{% else %}text-emerald-400{% endif %} block truncate">
+                <span class="text-sm bungee-regular {% if total_remaining < 0 %}text-rose-400{% else %}text-emerald-400{% endif %} block truncate">
                     ₹{{ total_remaining|floatformat:0 }}
                 </span>
             </div>
@@ -116,15 +116,15 @@
             <div class="flex items-center justify-between text-xs">
                 <div>
                     <span class="text-slate-400">Spent:</span>
-                    <span class="font-bold text-slate-800 ml-1">₹{{ item.spent|floatformat:2 }}</span>
+                    <span class="bungee-regular text-slate-800 ml-1">₹{{ item.spent|floatformat:2 }}</span>
                 </div>
                 <div>
                     <span class="text-slate-400">Budget:</span>
-                    <span class="font-bold text-slate-800 ml-1">₹{{ item.budget.amount|floatformat:2 }}</span>
+                    <span class="bungee-regular text-slate-800 ml-1">₹{{ item.budget.amount|floatformat:2 }}</span>
                 </div>
                 <div>
                     <span class="text-slate-400">Remaining:</span>
-                    <span class="font-bold ml-1 {% if item.is_exceeded %}text-rose-600{% else %}text-emerald-600{% endif %}">
+                    <span class="bungee-regular ml-1 {% if item.is_exceeded %}text-rose-600{% else %}text-emerald-600{% endif %}">
                         {% if item.is_exceeded %}-₹{{ item.remaining|slice:"1:"|default:item.spent }}{% else %}₹{{ item.remaining|floatformat:2 }}{% endif %}
                     </span>
                 </div>
@@ -137,7 +137,7 @@
                          style="width: {{ item.percent }}%;"></div>
                 </div>
                 <div class="flex items-center justify-between text-[11px] font-medium pt-0.5">
-                    <span class="text-slate-400">{{ item.raw_percent }}% of limit</span>
+                    <span class="text-slate-400"><span class="bungee-regular">{{ item.raw_percent }}%</span> of limit</span>
                     {% if item.is_exceeded %}
                     <span class="text-rose-600 font-semibold bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60 inline-flex items-center space-x-1">
                         <svg class="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

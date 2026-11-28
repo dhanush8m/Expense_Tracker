@@ -12,7 +12,7 @@
             <p class="text-xs text-slate-500 font-medium">All financial activity and records</p>
         </div>
         <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-semibold">
-            {{ transactions|length }} found
+            <span class="bungee-regular">{{ transactions|length }}</span> found
         </span>
     </div>
 
@@ -20,7 +20,7 @@
     <div class="bg-slate-100 p-1 rounded-2xl flex items-center text-xs font-semibold text-center border border-slate-200/60">
         <a href="?type=all{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}{% if current_sort != '-date' %}&sort={{ current_sort }}{% endif %}" 
            class="flex-1 py-2 rounded-xl transition {% if trans_type == 'all' %}bg-white text-slate-900 shadow-xs font-bold{% else %}text-slate-500 hover:text-slate-900{% endif %}">
-            All ({{ transactions|length }})
+            All (<span class="bungee-regular">{{ transactions|length }}</span>)
         </a>
         <a href="?type=expense{% if q %}&q={{ q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}{% if current_sort != '-date' %}&sort={{ current_sort }}{% endif %}" 
            class="flex-1 py-2 rounded-xl transition {% if trans_type == 'expense' %}bg-white text-rose-600 shadow-xs font-bold{% else %}text-slate-500 hover:text-slate-900{% endif %}">
@@ -38,21 +38,21 @@
             {% if trans_type in 'all,income' %}
             <div>
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold mb-0.5">Inflow</span>
-                <span class="text-sm font-bold text-emerald-400 block truncate">+₹{{ total_income|floatformat:0 }}</span>
+                <span class="text-sm bungee-regular text-emerald-400 block truncate">+₹{{ total_income|floatformat:0 }}</span>
             </div>
             {% endif %}
 
             {% if trans_type in 'all,expense' %}
             <div class="{% if trans_type == 'all' %}pl-2{% endif %}">
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold mb-0.5">Outflow</span>
-                <span class="text-sm font-bold text-rose-400 block truncate">-₹{{ total_expense|floatformat:0 }}</span>
+                <span class="text-sm bungee-regular text-rose-400 block truncate">-₹{{ total_expense|floatformat:0 }}</span>
             </div>
             {% endif %}
 
             {% if trans_type == 'all' %}
             <div class="pl-2">
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold mb-0.5">Net</span>
-                <span class="text-sm font-bold {% if net_difference < 0 %}text-rose-400{% else %}text-white{% endif %} block truncate">
+                <span class="text-sm bungee-regular {% if net_difference < 0 %}text-rose-400{% else %}text-white{% endif %} block truncate">
                     ₹{{ net_difference|floatformat:0 }}
                 </span>
             </div>
@@ -157,7 +157,7 @@
 
                     <!-- Amount -->
                     <div class="text-right">
-                        <span class="text-xs font-bold block {% if item.type == 'income' %}text-emerald-600{% else %}text-slate-900{% endif %}">
+                        <span class="text-xs bungee-regular block {% if item.type == 'income' %}text-emerald-600{% else %}text-slate-900{% endif %}">
                             {% if item.type == 'income' %}+{% else %}-{% endif %}₹{{ item.amount }}
                         </span>
                         <span class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">

@@ -35,10 +35,10 @@
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 Total Inflow
             </span>
-            <span class="text-base font-extrabold text-emerald-600 block truncate">
+            <span class="text-base bungee-regular text-emerald-600 block truncate">
                 +₹{{ total_income|floatformat:2 }}
             </span>
-            <span class="text-[10px] text-slate-400 mt-0.5 block">Earned in {{ selected_year }}</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Earned in <span class="bungee-regular">{{ selected_year }}</span></span>
         </div>
 
         <!-- Outflow -->
@@ -46,10 +46,10 @@
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 Total Outflow
             </span>
-            <span class="text-base font-extrabold text-rose-600 block truncate">
+            <span class="text-base bungee-regular text-rose-600 block truncate">
                 -₹{{ total_expenses|floatformat:2 }}
             </span>
-            <span class="text-[10px] text-slate-400 mt-0.5 block">Spent in {{ selected_year }}</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block">Spent in <span class="bungee-regular">{{ selected_year }}</span></span>
         </div>
 
         <!-- Net Savings -->
@@ -57,7 +57,7 @@
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 Net Savings
             </span>
-            <span class="text-base font-extrabold {% if net_savings < 0 %}text-rose-500{% else %}text-slate-900{% endif %} block truncate">
+            <span class="text-base bungee-regular {% if net_savings < 0 %}text-rose-500{% else %}text-slate-900{% endif %} block truncate">
                 ₹{{ net_savings|floatformat:2 }}
             </span>
             <span class="text-[10px] text-slate-400 mt-0.5 block">Retained balance</span>
@@ -68,7 +68,7 @@
             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                 Savings Rate
             </span>
-            <span class="text-base font-extrabold text-emerald-700 block truncate">
+            <span class="text-base bungee-regular text-emerald-700 block truncate">
                 {{ savings_rate }}%
             </span>
             <span class="text-[10px] text-slate-400 mt-0.5 block">Of total earnings</span>
@@ -91,7 +91,7 @@
     <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
             <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Category Spending</h2>
-            <span class="text-[10px] text-slate-400">{{ category_breakdown|length }} categories</span>
+            <span class="text-[10px] text-slate-400"><span class="bungee-regular">{{ category_breakdown|length }}</span> categories</span>
         </div>
 
         {% if category_breakdown %}
@@ -107,8 +107,8 @@
                     <div class="flex items-center justify-between text-xs font-semibold">
                         <span class="text-slate-800">{{ item.name }}</span>
                         <div class="text-right">
-                            <span class="text-slate-900 font-bold">₹{{ item.amount|floatformat:2 }}</span>
-                            <span class="text-slate-400 text-[10px] ml-1">({{ item.percent }}%)</span>
+                            <span class="text-slate-900 bungee-regular">₹{{ item.amount|floatformat:2 }}</span>
+                            <span class="text-slate-400 text-[10px] ml-1 bungee-regular">({{ item.percent }}%)</span>
                         </div>
                     </div>
                     <!-- Progress Bar -->
@@ -136,11 +136,11 @@
             <div class="flex items-center justify-between p-3.5 hover:bg-slate-50 transition">
                 <div>
                     <span class="font-bold text-slate-900 block">{{ row.month }}</span>
-                    <span class="text-[10px] text-slate-400">Net: ₹{{ row.net|floatformat:0 }}</span>
+                    <span class="text-[10px] text-slate-400">Net: <span class="bungee-regular">₹{{ row.net|floatformat:0 }}</span></span>
                 </div>
                 <div class="text-right space-y-0.5">
-                    <span class="text-emerald-600 font-bold block">+₹{{ row.income|floatformat:0 }}</span>
-                    <span class="text-rose-600 font-bold block">-₹{{ row.expense|floatformat:0 }}</span>
+                    <span class="text-emerald-600 bungee-regular block">+₹{{ row.income|floatformat:0 }}</span>
+                    <span class="text-rose-600 bungee-regular block">-₹{{ row.expense|floatformat:0 }}</span>
                 </div>
             </div>
             {% endfor %}
@@ -154,6 +154,15 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const isDarkTheme = document.documentElement.classList.contains('dark');
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.font.family = '"Agrave Pro", cursive';
+        if (isDarkTheme) {
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = '#1e293b';
+        }
+    }
+
     // 1. Monthly Income vs Expenses Bar Chart
     const monthlyCtx = document.getElementById('monthlyChart');
     if (monthlyCtx) {
@@ -200,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            font: { size: 9 },
+                            font: { size: 9, family: '"Bungee", "Agrave Pro", sans-serif' },
                             callback: function(value) {
                                 return '₹' + value;
                             }
@@ -229,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             '#ec4899', '#f97316', '#eab308', '#64748b'
                         ],
                         borderWidth: 2,
-                        borderColor: '#ffffff',
+                        borderColor: isDarkTheme ? '#111827' : '#ffffff',
                     }]
                 },
                 options: {
